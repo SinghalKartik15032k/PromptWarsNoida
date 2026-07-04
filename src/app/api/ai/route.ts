@@ -48,8 +48,10 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
+    console.error('AI Generation Error:', message);
+
     return new Response(
-      JSON.stringify({ error: 'Failed to generate AI response.' }),
+      JSON.stringify({ error: `Failed to generate AI response: ${message}` }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
