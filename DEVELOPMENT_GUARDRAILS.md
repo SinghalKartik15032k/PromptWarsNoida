@@ -14,7 +14,6 @@ An immersive, high-impact AI application built with **Antigravity** for the Prom
   * **Role / Tier:** Administrative / Full Access Evaluator
   * **Username / Email:** `admin@promptwars.io`
   * **Password:** `NoidaPromptWars2026!`
-  *(Note: A one-click "Login as Admin" guest bypass button is also available on the main landing screen).*
 
 ---
 
@@ -37,7 +36,6 @@ This solution was programmatically compiled by our development agent with archit
 * Zero dead-ends or feature bloat. Every single dashboard card, visualization, and interactive form is mapped 1:1 to fulfill the core criteria requirements.
 
 ### 2. Code Quality & Security (HIGH / MEDIUM SEVERITY)
-* Written in strict, sound TypeScript. No loose `anyY)
 * Written in strict, sound TypeScript. No loose `any` typing definitions are permitted in production files.
 * **Environment Isolation:** Zero API keys or tokens are stored in the codebase. All connection strings are piped securely via Vercel’s isolated dashboard secret layer.
 
