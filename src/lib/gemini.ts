@@ -12,7 +12,7 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const MODEL_NAME = 'gemini-1.5-flash';
+const MODEL_NAME = 'gemini-2.0-flash';
 
 function buildPrompt(feature: AIFeature, location: string, context?: string): string {
   const base = context ? `Additional context: ${context}\n\n` : '';
