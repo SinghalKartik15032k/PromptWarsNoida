@@ -3,8 +3,8 @@
 // All AI interactions are secured server-side. No API keys on the client.
 
 import { NextRequest } from 'next/server';
-import { streamGeminiResponse } from '../../lib/gemini';
-import { isValidAIRequest, type AIStreamRequest } from '../../types';
+import { streamGeminiResponse } from '../../../lib/gemini';
+import { isValidAIRequest, type AIStreamRequest } from '../../../types';
 
 export const runtime = 'nodejs';
 
