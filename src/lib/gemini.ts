@@ -12,7 +12,16 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-const MODEL_NAME = 'gemini-2.0-flash';
+// Ordered fallback: try each model until one succeeds
+const MODEL_CANDIDATES = [
+  'gemini-2.0-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-1.5-flash',
+  'gemini-pro',
+] as const;
+
+const MAX_RETRIES = 3;
+const BASE_DELAY_MS = 2000;
 
 function buildPrompt(feature: AIFeature, location: string, context?: string): string {
   const base = context ? `Additional context: ${context}\n\n` : '';
@@ -53,31 +62,80 @@ For each event provide: name, approximate date/period, location within the city,
   }
 }
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function tryGenerateStream(
+  modelName: string,
+  prompt: string,
+  retries: number = MAX_RETRIES
+): Promise<ReadableStream<Uint8Array>> {
+  const model = genAI.getGenerativeModel({ model: modelName });
+  const encoder = new TextEncoder();
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const result = await model.generateContentStream(prompt);
+
+      return new ReadableStream<Uint8Array>({
+        async start(controller) {
+          try {
+            for await (const chunk of result.stream) {
+              const text = chunk.text();
+              if (text) {
+                controller.enqueue(encoder.encode(text));
+              }
+            }
+            controller.close();
+          } catch (streamError) {
+            controller.error(streamError);
+          }
+        },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(`Gemini attempt ${attempt + 1}/${retries + 1} failed (${modelName}):`, message);
+
+      // If it's a 429 rate limit error and we have retries left, wait and retry
+      if ((message.includes('429') || message.includes('quota') || message.includes('rate')) && attempt < retries) {
+        const delay = BASE_DELAY_MS * Math.pow(2, attempt);
+        console.log(`Retrying in ${delay}ms...`);
+        await sleep(delay);
+        continue;
+      }
+
+      // For non-retryable errors or exhausted retries, throw
+      throw error;
+    }
+  }
+
+  throw new Error('All retry attempts exhausted');
+}
+
 export async function streamGeminiResponse(
   feature: AIFeature,
   location: string,
   context?: string
 ): Promise<ReadableStream<Uint8Array>> {
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
   const prompt = buildPrompt(feature, location, context);
 
-  const result = await model.generateContentStream(prompt);
+  // Try each model candidate in order until one works
+  const errors: string[] = [];
 
-  const encoder = new TextEncoder();
+  for (const modelName of MODEL_CANDIDATES) {
+    try {
+      console.log(`Trying model: ${modelName}`);
+      const stream = await tryGenerateStream(modelName, prompt);
+      console.log(`Success with model: ${modelName}`);
+      return stream;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      errors.push(`${modelName}: ${message}`);
+      console.warn(`Model ${modelName} failed, trying next fallback...`);
+      continue;
+    }
+  }
 
-  return new ReadableStream<Uint8Array>({
-    async start(controller) {
-      try {
-        for await (const chunk of result.stream) {
-          const text = chunk.text();
-          if (text) {
-            controller.enqueue(encoder.encode(text));
-          }
-        }
-        controller.close();
-      } catch (error) {
-        controller.error(error);
-      }
-    },
-  });
+  throw new Error(`All models exhausted. Errors: ${errors.join(' | ')}`);
 }
