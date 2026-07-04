@@ -12,16 +12,17 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Ordered fallback: try each model until one succeeds
+// Ordered fallback: each model has an independent quota bucket
 const MODEL_CANDIDATES = [
-  'gemini-2.0-flash',
   'gemini-2.0-flash-lite',
+  'gemini-1.5-flash-8b',
   'gemini-1.5-flash',
+  'gemini-2.0-flash',
   'gemini-pro',
 ] as const;
 
-const MAX_RETRIES = 3;
-const BASE_DELAY_MS = 2000;
+const MAX_RETRIES = 2;
+const BASE_DELAY_MS = 30000; // Match Google's retryDelay suggestion
 
 function buildPrompt(feature: AIFeature, location: string, context?: string): string {
   const base = context ? `Additional context: ${context}\n\n` : '';
