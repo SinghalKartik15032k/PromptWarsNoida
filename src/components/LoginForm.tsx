@@ -7,8 +7,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AuthResponse } from '@/types';
 
-const EVALUATOR_EMAIL = 'admin@promptwars.io';
-const EVALUATOR_PASSWORD = 'NoidaPromptWars2026!';
+// Constants removed for security
 
 interface LoginFormProps {
   onSuccess?: (role: 'admin' | 'user') => void;
@@ -27,11 +26,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
     await attemptLogin(email, password);
   };
 
-  const handleEvaluatorLogin = async () => {
-    setEmail(EVALUATOR_EMAIL);
-    setPassword(EVALUATOR_PASSWORD);
-    await attemptLogin(EVALUATOR_EMAIL, EVALUATOR_PASSWORD);
-  };
 
   const attemptLogin = async (emailVal: string, passwordVal: string) => {
     setIsLoading(true);
@@ -74,23 +68,6 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             Sign in to begin your cultural journey
           </p>
 
-          {/* ⚡ Evaluator Bypass Button */}
-          <button
-            id="evaluator-login-btn"
-            type="button"
-            onClick={handleEvaluatorLogin}
-            disabled={isLoading}
-            className="w-full mb-6 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-brand-amber to-brand-amber-glow text-brand-bg hover:shadow-glow-amber transition-all duration-300 disabled:opacity-60 flex items-center justify-center gap-2 group"
-          >
-            <span className="text-base">⚡</span>
-            {isLoading ? 'Authenticating...' : 'Login as Evaluator (One-Click)'}
-          </button>
-
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-brand-border" />
-            <span className="text-xs text-brand-muted">or sign in manually</span>
-            <div className="flex-1 h-px bg-brand-border" />
-          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -102,7 +79,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@promptwars.io"
+                placeholder="you@example.com"
                 required
                 className="w-full px-4 py-2.5 rounded-lg bg-brand-surface border border-brand-border text-brand-text placeholder-brand-muted text-sm focus:outline-none focus:border-brand-amber/60 focus:ring-1 focus:ring-brand-amber/30 transition-colors"
               />
@@ -149,9 +126,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
             </button>
           </form>
 
-          <p className="mt-4 text-center text-xs text-brand-muted">
-            Evaluator credentials pre-filled on one-click login above
-          </p>
+
         </div>
       </div>
     </div>

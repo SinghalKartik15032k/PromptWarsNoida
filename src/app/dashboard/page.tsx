@@ -17,7 +17,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const hasCookie = document.cookie.includes('ethnovibe_role=admin');
     if (!hasCookie) {
-      // Allow access for evaluators arriving directly — show welcome instead of hard redirect
+      // Allow manual login users to view the dashboard
     }
   }, [router]);
 
@@ -48,10 +48,7 @@ export default function DashboardPage() {
                   <h1 className="font-display text-2xl font-bold text-brand-text">
                     EthnoVibe Dashboard
                   </h1>
-                  <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-brand-amber/20 text-brand-amber border border-brand-amber/30">
-                    ⚡ Evaluator Mode
-                  </span>
-                </div>
+
                 <p className="text-brand-muted text-sm">
                   Explore 3 live Gen AI features powered by Gemini Flash
                 </p>
