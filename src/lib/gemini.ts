@@ -2,7 +2,7 @@
 // Server-only Gemini client — never import on the client side
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import type { AIFeature } from '@/types';
+import type { AIFeature } from '../types';
 
 if (!process.env.GEMINI_API_KEY) {
   throw new Error(
