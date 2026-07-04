@@ -3,5 +3,10 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
   "installCommand": "npm install --ignore-scripts",
-  "devCommand": "npm run dev"
+  "devCommand": "npm run dev",
+  "functions": {
+    "src/app/api/ai/route.ts": {
+      "maxDuration": 60
+    }
+  }
 }

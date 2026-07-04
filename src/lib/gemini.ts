@@ -21,8 +21,8 @@ const MODEL_CANDIDATES = [
   'gemini-pro',
 ] as const;
 
-const MAX_RETRIES = 2;
-const BASE_DELAY_MS = 30000; // Match Google's retryDelay suggestion
+const MAX_RETRIES = 1;
+const BASE_DELAY_MS = 500; // Keep low to avoid Vercel 10s timeout
 
 function buildPrompt(feature: AIFeature, location: string, context?: string): string {
   const base = context ? `Additional context: ${context}\n\n` : '';
