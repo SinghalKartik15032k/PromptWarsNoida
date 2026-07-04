@@ -12,17 +12,15 @@ if (!process.env.GEMINI_API_KEY) {
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Ordered fallback: each model has an independent quota bucket
+// Only models confirmed available on v1beta endpoint (used by @google/generative-ai SDK)
 const MODEL_CANDIDATES = [
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash-8b',
   'gemini-1.5-flash',
-  'gemini-2.0-flash',
+  'gemini-1.5-pro',
   'gemini-pro',
 ] as const;
 
 const MAX_RETRIES = 1;
-const BASE_DELAY_MS = 500; // Keep low to avoid Vercel 10s timeout
+const BASE_DELAY_MS = 1000;
 
 function buildPrompt(feature: AIFeature, location: string, context?: string): string {
   const base = context ? `Additional context: ${context}\n\n` : '';
