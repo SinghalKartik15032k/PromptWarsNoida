@@ -3,8 +3,8 @@
 // All AI interactions are secured server-side. No API keys on the client.
 
 import { NextRequest } from 'next/server';
-import { streamGeminiResponse } from '@/lib/gemini';
-import { isValidAIRequest } from '@/types';
+import { streamGeminiResponse } from '../../lib/gemini';
+import { isValidAIRequest, type AIStreamRequest } from '../../types';
 
 export const runtime = 'nodejs';
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       );
     }
 
-    const { feature, location, context } = body;
+    const { feature, location, context } = body as AIStreamRequest;
 
     const stream = await streamGeminiResponse(feature, location, context);
 
@@ -40,9 +40,10 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     // Handle Gemini API rate limit gracefully
     if (message.includes('quota') || message.includes('rate')) {
+      console.error('Gemini Quota/Rate Error:', message);
       return new Response(
         JSON.stringify({
-          error: 'AI service temporarily at capacity. Please try again in a moment.',
+          error: `Gemini quota/rate error: ${message}`,
         }),
         { status: 429, headers: { 'Content-Type': 'application/json' } }
       );
