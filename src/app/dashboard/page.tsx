@@ -48,7 +48,7 @@ export default function DashboardPage() {
                   <h1 className="font-display text-2xl font-bold text-brand-text">
                     EthnoVibe Dashboard
                   </h1>
-
+                </div>
                 <p className="text-brand-muted text-sm">
                   Explore 3 live Gen AI features powered by Gemini Flash
                 </p>
